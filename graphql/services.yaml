@@ -1,0 +1,207 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products
+  labels:
+    app: products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products
+  template:
+    metadata:
+      labels:
+        app: products
+    spec:
+      containers:
+      - name: products
+        imagePullPolicy: Never
+        image: supergraph-demo-fed2-products:latest
+        ports:
+        - containerPort: 4000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+  labels:
+    app: inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory
+        imagePullPolicy: Never
+        image: supergraph-demo-fed2-inventory:latest
+        ports:
+        - containerPort: 4000
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users
+  labels:
+    app: users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+  template:
+    metadata:
+      labels:
+        app: users
+    spec:
+      containers:
+      - name: users
+        imagePullPolicy: Never
+        image: supergraph-demo-fed2-users:latest
+        ports:
+        - containerPort: 4000
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testgql
+  labels:
+    app: testgql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testgql
+  template:
+    metadata:
+      labels:
+        app: testgql
+    spec:
+      containers:
+      - name: testgql
+        imagePullPolicy: Never
+        image: test_graphql_apollo:latest
+        ports:
+        - containerPort: 4000
+---
+
+
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: products
+  labels:
+    run: products
+spec:
+  # Expose the service on a static port on each node
+  # so that we can access the service from outside the cluster 
+  type: NodePort
+
+  # When the node receives a request on the static port (30163)
+  # "select pods with the label 'app' set to 'echo-hostname'"
+  # and forward the request to one of them
+  selector:
+    app: products
+
+  ports:
+    # Three types of ports for a service
+    # nodePort - a static port assigned on each the node
+    # port - port exposed internally in the cluster
+    # targetPort - the container port to send requests to
+    - nodePort: 30163
+      port: 8081 
+      targetPort: 4000
+
+---
+
+
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: inventory
+  labels:
+    run: inventory
+spec:
+  # Expose the service on a static port on each node
+  # so that we can access the service from outside the cluster 
+  type: NodePort
+
+  # When the node receives a request on the static port (30163)
+  # "select pods with the label 'app' set to 'echo-hostname'"
+  # and forward the request to one of them
+  selector:
+    app: inventory
+
+  ports:
+    # Three types of ports for a service
+    # nodePort - a static port assigned on each the node
+    # port - port exposed internally in the cluster
+    # targetPort - the container port to send requests to
+    - nodePort: 30164
+      port: 8082 
+      targetPort: 4000
+
+
+---
+
+
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: users
+  labels:
+    run: users
+spec:
+  # Expose the service on a static port on each node
+  # so that we can access the service from outside the cluster 
+  type: NodePort
+
+  # When the node receives a request on the static port (30163)
+  # "select pods with the label 'app' set to 'echo-hostname'"
+  # and forward the request to one of them
+  selector:
+    app: users
+
+  ports:
+    # Three types of ports for a service
+    # nodePort - a static port assigned on each the node
+    # port - port exposed internally in the cluster
+    # targetPort - the container port to send requests to
+    - nodePort: 30165
+      port: 8083 
+#       targetPort: 4000
+
+apiVersion: v1 
+kind: Service 
+metadata:
+  name: testgql
+  labels:
+    run: testgql
+spec:
+  # Expose the service on a static port on each node
+  # so that we can access the service from outside the cluster 
+  type: NodePort
+
+  # When the node receives a request on the static port (30163)
+  # "select pods with the label 'app' set to 'echo-hostname'"
+  # and forward the request to one of them
+  selector:
+    app: testgql
+
+  ports:
+    # Three types of ports for a service
+    # nodePort - a static port assigned on each the node
+    # port - port exposed internally in the cluster
+    # targetPort - the container port to send requests to
+    - nodePort: 30165
+      port: 8084 
+      targetPort: 4000
